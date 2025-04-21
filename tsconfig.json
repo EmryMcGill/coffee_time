@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "context/pocketbase.jsx", "app/(tabs)/index.jsx", "app/(tabs)/create.jsx", "components/BottomSheet.jsx", "components/CoffeeCard.jsx", "app/(tabs)/profile.jsx"  ]
 }
