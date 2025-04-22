@@ -24,16 +24,19 @@ export default function Profile() {
   const { 
     isLoggedIn, 
     user,
-    getAvatar
+    getUser
   } = usePocket();
   const router = useRouter();
 
   const [avatarURI, setAvatarURI] = useState("");
 
   useEffect(() => {
-    if (isLoggedIn) {
-      getAvatar(user.id).then((res) => setAvatarURI(`${process.env.EXPO_PUBLIC_PB_URI}/api/files/users/${user.id}/${res}`));
+    const handleAvatar = async () => {
+      if (isLoggedIn) {
+        setAvatarURI(`${process.env.EXPO_PUBLIC_PB_URI}/api/files/users/${user.id}/${user.avatar}`);
+      }
     }
+    handleAvatar();
   }, [user]);
 
   const handleDeleteDrink = async (id) => {
@@ -65,25 +68,34 @@ export default function Profile() {
           <>
           { isLoggedIn ?
             <View style={styles.profileContainer}>
-              <View style={styles.avatarContainer}>
-                <Image source={{ uri: avatarURI }} style={styles.avatar} />
-                
-                <View>
+              <View style={styles.profileTopContainer}>
+                {user?.avatar && avatarURI ?
+                  <Image source={{ uri: avatarURI }} style={styles.avatar} />
+                :
+                  <Ionicons name='person-circle-outline' size={80} color='#949494' />
+                }
+                <View style={styles.profileInfoContainer}>
                   <Text style={styles.name}>{user.name}</Text>
-                  <Text style={styles.machine}>{user.machine ? user.machine : 'machine'}</Text>
-                  <Text style={styles.machine}>{user.grinder ? user.grinder : 'grinder'}</Text>
+                  <View style={styles.machine_container}>
+                    <Image source={require('../../assets/images/machine_img.png')} style={styles.icon} />
+                    <Text style={styles.machine}>{user.machine ? user.machine : 'machine'}</Text>
+                  </View>
+                  <View style={styles.machine_container}>
+                    <Image source={require('../../assets/images/grinder_img.png')} style={styles.icon} />
+                    <Text style={styles.machine}>{user.grinder ? user.grinder : 'grinder'}</Text>
+                  </View>
                 </View>
                 
               </View>
-              <View style={{justifyContent: 'space-between', width: '100%', flexDirection:'row'}}>
-              <Pressable 
-                style={{alignItems: 'center', gap: 5}}
-                onPress={() => router.push('/following')}
-              >
+              <View style={styles.profileBottomContainer}>
+                <Pressable 
+                  style={{alignItems: 'center', gap: 5}}
+                  onPress={() => router.push('/following')}
+                >
                   <Text>Following</Text>
                   <Text style={{fontWeight: 'bold'}}>{user?.following?.length}</Text>
-              </Pressable>
-              <Pressable
+                </Pressable>
+                <Pressable
                   onPress={() => router.push('/editProfile')}
                   style={{ justifyContent: 'flex-end', paddingLeft: 10}}
                 >
@@ -146,19 +158,42 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 15,
     borderRadius: 8,
-    alignItems: 'center',
+    marginTop: 5,
+    width: '100%',
+  },
+  profileTopContainer: {
+    flexDirection: 'row',
+    width: '100%',
     gap: 10,
-    marginTop: 5
+  },
+  profileInfoContainer: {
+    flex: 1,
+    minWidth: 0,
+    gap: 2
+  },
+  profileBottomContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  machine_container: {
+    flexDirection: 'row', 
+    alignItems: 'start',
+    minWidth: 0
   },
   name: {
     fontWeight: 'bold',
     fontSize: 18,
     marginBottom: 5
   },
+  icon: {
+    width:25,
+    aspectRatio: 1/1
+  },
   machine: {
     fontSize: 16,
     color: 'grey',
-    marginBottom: 3
+    flexShrink: 1
   },
   loginText: {
     fontSize: 16,
@@ -184,6 +219,8 @@ const styles = StyleSheet.create({
     gap: 15, 
     alignItems: 'flex-start', 
     width: "100%",
+    backgroundColor: 'blue',
+    flexWrap: 'wrap'
   },
   def_image_container: {
     display: 'flex',

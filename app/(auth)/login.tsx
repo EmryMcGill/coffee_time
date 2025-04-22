@@ -72,6 +72,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: 'white',
+    borderTopColor: '#BBBBBB',
+    borderTopWidth: 0.5
   },
   text: {
     fontSize: 18,

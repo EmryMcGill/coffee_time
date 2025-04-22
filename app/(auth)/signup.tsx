@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePocket } from '@/context/pocketbase';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const Signup = () => {
 
@@ -24,6 +25,7 @@ const Signup = () => {
   const [passwordConf, setPasswordConf] = useState('');
 
   const handleSignup = async () => {
+    console.log('signup')
     const status = await signup(name, email, password, passwordConf);
 
     // go to profile screen
@@ -92,6 +94,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: 'white',
+    borderTopWidth: 0.5,
+    borderTopColor: '#BBBBBB'
   },
   text: {
     fontSize: 18,

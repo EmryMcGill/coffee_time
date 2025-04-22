@@ -15,6 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import * as FileSystem from 'expo-file-system';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { useDrinkContext } from '@/context/drinkContext';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -24,6 +25,7 @@ const EditProfile = () => {
   const router = useRouter();
   const machineRef = React.useRef(null);
   const grinderRef = React.useRef(null);
+  const { fetchDrinks } = useDrinkContext();
 
   const { 
     editProfile,
@@ -35,13 +37,14 @@ const EditProfile = () => {
   const [machine, setMachine] = useState(user.machine);
   const [grinder, setGrinder] = useState(user.grinder);
   const [avatar, setAvatar] = useState("");
-  const [avatarURI, setAvatarURI] = useState(user?.avatar ? `http://192.168.0.15:8090/api/files/users/${user?.id}/${user?.avatar}` : null);
+  const [avatarURI, setAvatarURI] = useState(user?.avatar ? `${process.env.EXPO_PUBLIC_PB_URI}/api/files/users/${user?.id}/${user?.avatar}` : null);
 
   const handleChange = async () => {
     const status = await editProfile(name, machine, grinder, avatar);
 
     // go to profile screen
     if (status === 200) {
+      await fetchDrinks();
       router.back();
     }
   }
@@ -56,7 +59,12 @@ const EditProfile = () => {
           [
             { text: "Camera", onPress: () => resolve("camera") },
             { text: "Gallery", onPress: () => resolve("gallery") },
-            { text: "Clear Selected", onPress: () => {setAvatar(""); resolve(null)}, style: "cancel" },
+            { text: "Clear Selected", 
+              onPress: () => {
+                setAvatar("none"); 
+                setAvatarURI("");
+                resolve(null);
+              }, style: "cancel" },
             { text: "Cancel", onPress: () => resolve(null), style: "cancel" },
           ]
         );
@@ -135,7 +143,7 @@ const EditProfile = () => {
         {avatarURI ? 
           <Image source={{ uri: avatarURI }} style={styles.avatar} /> 
         :
-          <Ionicons name={'person-outline'} size={60} color={'grey'} />
+          <Ionicons name={'person-circle-outline'} size={100} color={'grey'} />
         }
       </Pressable>
       <Text style={styles.inputLabel}>Username</Text>
@@ -180,7 +188,9 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 15,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    borderTopColor: '#BBBBBB',
+    borderTopWidth: 0.5
   },
   text: {
     fontSize: 18,

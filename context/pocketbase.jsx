@@ -48,7 +48,6 @@ export const PbProvider = ({ children }) => {
       // try to refresh the token
       try {
         await pb.collection('users').authRefresh();
-        console.log("Token refreshed");
       } catch (err) {
         console.error("Failed to refresh token:", err);
         pb.authStore.clear();
@@ -84,26 +83,26 @@ export const PbProvider = ({ children }) => {
   }
 
   // sign up
-  const signup = async (name, email, password, confirmPass, avatar) => {
+  const signup = async (name, email, password, confirmPass) => {
     // Read the file into a blob
-    let fileBlob;
-    if (avatar !== '') {
-      fileBlob = {
-        uri:  avatar,
-        type: 'image/*',
-        name: avatar.split('/').pop(),
-      };
-    }
-    else {
-      fileBlob = null;
-    }
+    // let fileBlob;
+    // if (avatar !== '') {
+    //   fileBlob = {
+    //     uri:  avatar,
+    //     type: 'image/*',
+    //     name: avatar.split('/').pop(),
+    //   };
+    // }
+    // else {
+    //   fileBlob = null;
+    // }
 
     const data = {
       "password": password,
       "passwordConfirm": confirmPass,
       "email": email,
       "name": name,
-      "avatar": fileBlob
+     // "avatar": fileBlob
     };
 
     try {
@@ -121,7 +120,16 @@ export const PbProvider = ({ children }) => {
     // Read the file into a blob
     let fileBlob;
     let data = {};
-    if (avatar !== '') {
+    if (avatar === 'none') {
+      fileBlob = null;
+      data = {
+        "name": name,
+        "machine": machine,
+        "grinder": grinder,
+        "avatar": ""
+      };
+    }
+    else if (avatar !== '') {
       fileBlob = {
         uri:  avatar,
         type: 'image/*',
@@ -139,7 +147,7 @@ export const PbProvider = ({ children }) => {
       data = {
         "name": name,
         "machine": machine,
-        "grinder": grinder
+        "grinder": grinder,
       };
     }
   
@@ -159,10 +167,10 @@ export const PbProvider = ({ children }) => {
   }
 
   // get avatar
-  const getAvatar = async (id) => {
+  const getUser = async (id) => {
     try {
       const user = await pb.collection("users").getOne(id);
-      return user.avatar;
+      return user;
     }
     catch (err) {
       console.log("failed to get avatar", JSON.stringify(err, null, 2));
@@ -205,7 +213,6 @@ export const PbProvider = ({ children }) => {
   const follow = async (id) => {
 
     const new_following = [...user.following, id];
-    console.log("new following", new_following);
     try {
       await pb.collection('users').update(user.id, {"following": new_following});
       return 200;
@@ -217,17 +224,13 @@ export const PbProvider = ({ children }) => {
   }
 
   const unfollow = async (id) => {
-
-    console.log("old following, id", user.following, id);
-
     const new_following = user.following.filter(item => item !== id);
-    console.log("new following", new_following);
     try {
       await pb.collection('users').update(user.id, {"following": new_following});
       return 200;
     }
     catch (err) {
-        console.log("failed to edit profile: ", JSON.stringify(err, null, 2));
+        console.log("failed to unfollow: ", JSON.stringify(err, null, 2));
         return 400;
     }
   }
@@ -237,7 +240,6 @@ export const PbProvider = ({ children }) => {
   // load drinks
   const fetchDrinksPb = async () => {
     const user_filter = [...user.following, user.id];
-    console.log('fil', user_filter)
     const filter = user_filter.map(id => `user="${id}"`).join(' || ');
     try {
       const res = await pb.collection("drinks").getList(1, 50, {
@@ -313,7 +315,7 @@ export const PbProvider = ({ children }) => {
       saveDrinkPb,
       fetchDrinksPb,
       deleteDrinkPb,
-      getAvatar,
+      getUser,
       fetchUsers,
       fetchUser,
       follow,

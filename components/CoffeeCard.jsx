@@ -28,9 +28,10 @@ export default function CoffeeCard({
     handleDelete
 }) {
 
-    const { user } = usePocket();
-
+    const { user, getUser, pb } = usePocket();
     const imageUrl = `${process.env.EXPO_PUBLIC_PB_URI}/api/files/drinks/${id}/${image}`;
+    const [avatarURI, setAvatarURI] = useState('');
+
 
     // function to format a date
     const formatDate = (date) => {
@@ -43,10 +44,23 @@ export default function CoffeeCard({
         return format(date, "MMMM d, yyyy 'at' h:mm a");
     };
 
+    useEffect(() => {
+        const handleAvatar = async () => {
+            const res = await getUser(postUser);
+            if (res.avatar) {
+                setAvatarURI(`${process.env.EXPO_PUBLIC_PB_URI}/api/files/users/${postUser}/${res.avatar}`);
+            }
+            else {
+                setAvatarURI('');
+            }
+        }
+        handleAvatar();
+    }, [pb]);
+
     return (
         <View style={styles.container}>
             <View style={styles.profileContainer}>
-                {avatar ? <Image source={{uri: avatar}} style={styles.profileImage} /> : <Ionicons name='person-circle-outline' size={35} color='grey' />}
+                {avatarURI ? <Image source={{uri: avatarURI}} style={styles.profileImage} /> : <Ionicons name='person-circle-outline' size={35} color='grey' />}
                 <View style={styles.profileInfoContainer}>
                     <Text style={styles.userName}>{name}</Text>
                     <Text style={styles.dateText}>{formatDate(created)}</Text>

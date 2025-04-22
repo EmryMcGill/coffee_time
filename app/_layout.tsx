@@ -36,7 +36,7 @@ export default function RootLayout() {
                   name="(auth)/login" 
                   options={{ 
                     title: "Login",
-                    headerBackTitle: "Back"
+                    headerBackTitle: "Back",
                   }} />
                 <Stack.Screen 
                   name="(auth)/signup" 

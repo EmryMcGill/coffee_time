@@ -74,7 +74,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingVertical: 0,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    borderTopColor: '#BBBBBB',
+    borderTopWidth: 0.5
   },
   textInput: {
     flexDirection: 'row',

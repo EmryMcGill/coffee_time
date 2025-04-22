@@ -25,9 +25,7 @@ export function DrinkProvider ({ children }) {
   // function to fetch the drinks
   // return: null
   const fetchDrinks = async () => {
-    console.log('fetch')
     if (isLoggedIn) {
-      console.log('logged')
       // sync local drinks
       // get the local drinks
       const res = await db.getAllAsync("SELECT * FROM drinks");
